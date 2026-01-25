@@ -1,0 +1,10 @@
+# Flask Web框架
+Flask>=2.3.0
+
+# YAML配置文件解析
+PyYAML>=6.0
+
+# 文件编码检测
+chardet>=5.0.0
+
+# 无其他依赖，SQLite为Python内置

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <title>手机号码生成查询系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- 
+        手机号码生成查询系统 - 主页面
+        
+        功能说明：
+        - 提供手机号码查询和生成功能
+        - 支持按号段、归属地、运营商筛选
+        - 生成符合条件的所有手机号码
+        - 支持文件下载
+        
+        页面结构：
+        1. 页面头部 - 系统标题
+        2. 查询表单 - 各种筛选条件输入
+        3. 状态提示区域 - 显示加载、结果、错误信息
+        4. 底部版权信息
+    -->
+    
+    <div class="container">
+        <!-- 页面头部 -->
+        <header class="page-header">
+            <h1>手机号码生成查询系统</h1>
+            {% if session.get('logged_in') %}
+            <a href="/api/logout" class="logout-link">退出登录</a>
+            {% endif %}
+        </header>
+        
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 查询表单卡片 -->
+            <div class="card query-card">
+                <div class="card-body">
+                    <!-- 查询表单 -->
+                    <form id="queryForm">
+                        <!-- 号段输入（必填） -->
+                        <div class="form-group">
+                            <label for="prefix">
+                                前3位号段 <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="prefix" 
+                                name="prefix" 
+                                placeholder="请输入手机号前3位，如：130、138、159"
+                                maxlength="3"
+                                pattern="[0-9]{3}"
+                                required
+                            >
+                            <small class="form-hint">必须是3位数字</small>
+                        </div>
+                        
+                        <!-- 后4位输入（选填，与后3位互斥） -->
+                        <div class="form-group">
+                            <label for="suffix4">
+                                后4位号码
+                            </label>
+                            <input 
+                                type="text" 
+                                id="suffix4" 
+                                name="suffix4" 
+                                placeholder="输入手机号最后4位，精确匹配"
+                                maxlength="4"
+                                pattern="[0-9]{4}"
+                            >
+                            <small class="form-hint">精确匹配最后4位数字</small>
+                        </div>
+                        
+                        <!-- 后3位输入（选填，与后4位互斥） -->
+                        <div class="form-group">
+                            <label for="suffix3">
+                                后3位号码
+                            </label>
+                            <input 
+                                type="text" 
+                                id="suffix3" 
+                                name="suffix3" 
+                                placeholder="输入手机号最后3位，精确匹配"
+                                maxlength="3"
+                                pattern="[0-9]{3}"
+                            >
+                            <small class="form-hint">精确匹配最后3位数字</small>
+                        </div>
+                        
+                        <!-- 省份选择（必填） -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="province">
+                                    省份 <span class="required">*</span>
+                                </label>
+                                <select id="province" name="province" required>
+                                    <option value="">请选择省份</option>
+                                    {% for province in provinces %}
+                                    <option value="{{ province }}">{{ province }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <!-- 城市选择（必填） -->
+                            <div class="form-group">
+                                <label for="city">
+                                    城市 <span class="required">*</span>
+                                </label>
+                                <select id="city" name="city" required disabled>
+                                    <option value="">请先选择省份</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- 运营商选择（选填） -->
+                        <div class="form-group">
+                            <label>运营商类型</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="operators" value="1">
+                                    <span class="checkmark"></span>
+                                    移动
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="operators" value="2">
+                                    <span class="checkmark"></span>
+                                    联通
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="operators" value="3">
+                                    <span class="checkmark"></span>
+                                    电信
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="operators" value="4">
+                                    <span class="checkmark"></span>
+                                    广电
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="operators" value="5">
+                                    <span class="checkmark"></span>
+                                    工信
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- 提交按钮 -->
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+                                生成并下载
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- 状态提示区域 -->
+            <div id="statusArea" class="status-area" style="display: none;">
+                <!-- Loading状态 -->
+                <div id="loadingStatus" class="status-box loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>正在生成号码，请稍候...</p>
+                </div>
+                
+                <!-- 成功状态 -->
+                <div id="successStatus" class="status-box success" style="display: none;">
+                    <div class="status-icon">✓</div>
+                    <h3>号码生成完成</h3>
+                    <p id="resultCount"></p>
+                    <div id="downloadLinks" class="download-links">
+                        <!-- 下载链接将通过JavaScript动态插入 -->
+                    </div>
+                </div>
+                
+                <!-- 错误状态 -->
+                <div id="errorStatus" class="status-box error" style="display: none;">
+                    <div class="status-icon">✗</div>
+                    <h3>生成失败</h3>
+                    <p id="errorMessage"></p>
+                </div>
+            </div>
+        </main>
+        
+        <!-- 页面底部 -->
+        <footer class="page-footer">
+            <p>© 2024 手机号码生成查询系统</p>
+        </footer>
+    </div>
+    
+    <!-- 引入JavaScript文件 -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <!-- 页面特定脚本 -->
+    <script>
+        /**
+         * 查询页面交互逻辑
+         * 
+         * 功能：
+         * 1. 处理表单输入验证
+         * 2. 省份城市联动
+         * 3. 后3/后4位互斥逻辑
+         * 4. 提交查询请求
+         * 5. 处理响应和显示结果
+         */
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取DOM元素
+            const queryForm = document.getElementById('queryForm');
+            const prefixInput = document.getElementById('prefix');
+            const suffix4Input = document.getElementById('suffix4');
+            const suffix3Input = document.getElementById('suffix3');
+            const provinceSelect = document.getElementById('province');
+            const citySelect = document.getElementById('city');
+            const submitBtn = document.getElementById('submitBtn');
+            const statusArea = document.getElementById('statusArea');
+            
+            // 状态区域元素
+            const loadingStatus = document.getElementById('loadingStatus');
+            const successStatus = document.getElementById('successStatus');
+            const errorStatus = document.getElementById('errorStatus');
+            const resultCount = document.getElementById('resultCount');
+            const downloadLinks = document.getElementById('downloadLinks');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            /**
+             * 后3位和后4位互斥逻辑
+             * 当用户填写其中一个时，另一个变为禁用状态
+             */
+            function setupSuffixMutex() {
+                suffix4Input.addEventListener('input', function() {
+                    if (this.value) {
+                        suffix3Input.disabled = true;
+                        suffix3Input.placeholder = '已选择后4位';
+                    } else {
+                        suffix3Input.disabled = false;
+                        suffix3Input.placeholder = '输入手机号最后3位，精确匹配';
+                    }
+                });
+                
+                suffix3Input.addEventListener('input', function() {
+                    if (this.value) {
+                        suffix4Input.disabled = true;
+                        suffix4Input.placeholder = '已选择后3位';
+                    } else {
+                        suffix4Input.disabled = false;
+                        suffix4Input.placeholder = '输入手机号最后4位，精确匹配';
+                    }
+                });
+            }
+            
+            /**
+             * 省份城市联动
+             * 选择省份后，动态加载该省份的城市列表
+             */
+            function setupProvinceCityLinkage() {
+                provinceSelect.addEventListener('change', function() {
+                    const province = this.value;
+                    
+                    if (province) {
+                        // 禁用城市选择框，显示加载状态
+                        citySelect.disabled = true;
+                        citySelect.innerHTML = '<option value="">加载中...</option>';
+                        
+                        // 获取城市列表
+                        fetch(`/api/cities/${encodeURIComponent(province)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.code === 200) {
+                                    citySelect.innerHTML = '<option value="">请选择城市</option>';
+                                    data.data.forEach(city => {
+                                        const option = document.createElement('option');
+                                        option.value = city;
+                                        option.textContent = city;
+                                        citySelect.appendChild(option);
+                                    });
+                                    citySelect.disabled = false;
+                                } else {
+                                    citySelect.innerHTML = '<option value="">加载失败</option>';
+                                }
+                            })
+                            .catch(error => {
+                                console.error('获取城市列表失败：', error);
+                                citySelect.innerHTML = '<option value="">加载失败</option>';
+                            });
+                    } else {
+                        citySelect.innerHTML = '<option value="">请先选择省份</option>';
+                        citySelect.disabled = true;
+                    }
+                });
+            }
+            
+            /**
+             * 显示状态区域
+             * @param {string} type - 状态类型：loading/success/error
+             */
+            function showStatus(type) {
+                statusArea.style.display = 'block';
+                loadingStatus.style.display = 'none';
+                successStatus.style.display = 'none';
+                errorStatus.style.display = 'none';
+                
+                if (type === 'loading') {
+                    loadingStatus.style.display = 'flex';
+                } else if (type === 'success') {
+                    successStatus.style.display = 'block';
+                } else if (type === 'error') {
+                    errorStatus.style.display = 'block';
+                }
+            }
+            
+            /**
+             * 隐藏状态区域
+             */
+            function hideStatus() {
+                statusArea.style.display = 'none';
+            }
+            
+            /**
+             * 显示错误消息
+             * @param {string} message - 错误消息
+             */
+            function showError(message) {
+                errorMessage.textContent = message;
+                showStatus('error');
+            }
+            
+            /**
+             * 验证表单输入
+             * @returns {object} 验证结果 {valid, message}
+             */
+            function validateForm() {
+                // 验证号段
+                const prefix = prefixInput.value.trim();
+                if (!prefix) {
+                    return { valid: false, message: '请输入手机号前3位号段' };
+                }
+                if (!/^[0-9]{3}$/.test(prefix)) {
+                    return { valid: false, message: '号段必须为3位数字' };
+                }
+                
+                // 验证省份和城市
+                const province = provinceSelect.value;
+                if (!province) {
+                    return { valid: false, message: '请选择省份' };
+                }
+                
+                const city = citySelect.value;
+                if (!city) {
+                    return { valid: false, message: '请选择城市' };
+                }
+                
+                // 验证后3/4位互斥
+                const suffix4 = suffix4Input.value.trim();
+                const suffix3 = suffix3Input.value.trim();
+                
+                if (suffix4 && !/^[0-9]{4}$/.test(suffix4)) {
+                    return { valid: false, message: '后4位必须为4位数字' };
+                }
+                
+                if (suffix3 && !/^[0-9]{3}$/.test(suffix3)) {
+                    return { valid: false, message: '后3位必须为3位数字' };
+                }
+                
+                return { valid: true };
+            }
+            
+            /**
+             * 获取选中的运营商
+             * @returns {Array} 运营商值数组
+             */
+            function getSelectedOperators() {
+                const operators = [];
+                document.querySelectorAll('input[name="operators"]:checked').forEach(checkbox => {
+                    operators.push(parseInt(checkbox.value));
+                });
+                return operators;
+            }
+            
+            /**
+             * 提交查询请求
+             */
+            queryForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 验证表单
+                const validation = validateForm();
+                if (!validation.valid) {
+                    showError(validation.message);
+                    return;
+                }
+                
+                // 准备请求数据
+                const requestData = {
+                    prefix: prefixInput.value.trim(),
+                    suffix_4: suffix4Input.value.trim() || null,
+                    suffix_3: suffix3Input.value.trim() || null,
+                    province: provinceSelect.value,
+                    city: citySelect.value,
+                    operators: getSelectedOperators()
+                };
+                
+                // 显示加载状态
+                showStatus('loading');
+                submitBtn.disabled = true;
+                submitBtn.textContent = '生成中...';
+                
+                // 发送请求
+                fetch('/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '生成并下载';
+                    
+                    if (data.code === 200) {
+                        // 生成成功
+                        resultCount.textContent = `共生成 ${data.data.count.toLocaleString()} 个号码`;
+                        
+                        // 生成下载链接
+                        downloadLinks.innerHTML = '';
+                        if (data.data.files && data.data.files.length > 0) {
+                            data.data.files.forEach(file => {
+                                const link = document.createElement('a');
+                                link.href = file.url;
+                                link.className = 'download-btn';
+                                link.textContent = `下载 ${file.name} (${file.size})`;
+                                link.download = file.name;
+                                downloadLinks.appendChild(link);
+                                
+                                // 添加换行
+                                downloadLinks.appendChild(document.createTextNode(' '));
+                            });
+                        }
+                        
+                        showStatus('success');
+                    } else {
+                        // 生成失败
+                        showError(data.message || '生成失败，请稍后重试');
+                    }
+                })
+                .catch(error => {
+                    console.error('生成请求失败：', error);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '生成并下载';
+                    showError('生成失败，请检查网络连接');
+                });
+            });
+            
+            // 初始化事件监听
+            setupSuffixMutex();
+            setupProvinceCityLinkage();
+        });
+    </script>
+</body>
+</html>

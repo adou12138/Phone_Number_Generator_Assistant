@@ -1,0 +1,909 @@
+/* 
+ * 手机号码生成查询系统 - 样式表
+ * 
+ * 样式说明：
+ * - 采用简洁的蓝色系设计风格
+ * - 响应式设计，兼容PC端和移动端
+ * - 包含所有页面组件的样式
+ * 
+ * 作者：Phone Number Generator
+ * 版本：1.0.0
+ */
+
+
+/* ===========================================
+   1. 基础样式重置
+   =========================================== */
+
+/* 
+ * 基础样式重置
+ * 确保跨浏览器的一致性
+ */
+* {
+    /* 盒模型计算方式 */
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    /* 设置根字体大小，用于rem单位计算 */
+    font-size: 16px;
+    /* 平滑滚动 */
+    scroll-behavior: smooth;
+}
+
+body {
+    /* 字体设置 */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 
+                 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    /* 字体颜色 */
+    color: #333333;
+    /* 背景颜色 */
+    background-color: #f5f5f5;
+    /* 行高 */
+    line-height: 1.6;
+    /* 最小高度 */
+    min-height: 100vh;
+}
+
+/* 链接样式 */
+a {
+    color: #2196F3;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #1976D2;
+    text-decoration: underline;
+}
+
+
+/* ===========================================
+   2. 布局容器
+   =========================================== */
+
+/* 
+ * 主容器
+ * 限制内容最大宽度，居中显示
+ */
+.container {
+    /* 最大宽度 */
+    max-width: 800px;
+    /* 居中 */
+    margin: 0 auto;
+    /* 内边距 */
+    padding: 20px;
+    /* 最小高度 */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* ===========================================
+   3. 页面头部
+   =========================================== */
+
+/* 
+ * 页面头部样式
+ * 包含标题和退出登录链接
+ */
+.page-header {
+    /* 文本居中 */
+    text-align: center;
+    /* 下边距 */
+    margin-bottom: 30px;
+    /* 相对定位，用于放置退出链接 */
+    position: relative;
+}
+
+.page-header h1 {
+    /* 字体大小 */
+    font-size: 1.75rem;
+    /* 字体粗细 */
+    font-weight: 600;
+    /* 颜色 */
+    color: #2196F3;
+    /* 下边距 */
+    margin-bottom: 10px;
+}
+
+/* 退出登录链接 */
+.logout-link {
+    /* 绝对定位到右上角 */
+    position: absolute;
+    right: 0;
+    top: 5px;
+    /* 字体大小 */
+    font-size: 0.875rem;
+    /* 颜色 */
+    color: #666666;
+    /* 内边距 */
+    padding: 5px 10px;
+    /* 边框 */
+    border: 1px solid #dddddd;
+    /* 圆角 */
+    border-radius: 4px;
+    /* 背景 */
+    background: #ffffff;
+    /* 过渡效果 */
+    transition: all 0.3s ease;
+}
+
+.logout-link:hover {
+    /* 悬停时颜色变化 */
+    background: #f0f0f0;
+    color: #333333;
+    text-decoration: none;
+}
+
+
+/* ===========================================
+   4. 卡片组件
+   =========================================== */
+
+/* 
+ * 卡片容器
+ * 用于包裹表单和其他内容
+ */
+.card {
+    /* 背景颜色 */
+    background: #ffffff;
+    /* 圆角 */
+    border-radius: 8px;
+    /* 阴影 */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    /* 溢出隐藏 */
+    overflow: hidden;
+    /* 下边距 */
+    margin-bottom: 20px;
+}
+
+/* 登录卡片特殊样式 */
+.login-card {
+    /* 最大宽度 */
+    max-width: 400px;
+    /* 居中 */
+    margin: 50px auto;
+}
+
+/* 卡片头部 */
+.card-header {
+    /* 背景渐变 */
+    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+    /* 颜色 */
+    color: #ffffff;
+    /* 内边距 */
+    padding: 30px 20px;
+    /* 文本居中 */
+    text-align: center;
+}
+
+.card-header h1 {
+    /* 字体大小 */
+    font-size: 1.5rem;
+    /* 字体粗细 */
+    font-weight: 600;
+    /* 下边距 */
+    margin-bottom: 10px;
+}
+
+.card-header .subtitle {
+    /* 字体大小 */
+    font-size: 0.875rem;
+    /* 不透明度 */
+    opacity: 0.9;
+}
+
+/* 卡片内容区域 */
+.card-body {
+    /* 内边距 */
+    padding: 30px 20px;
+}
+
+/* 卡片底部 */
+.card-footer {
+    /* 背景颜色 */
+    background: #f8f8f8;
+    /* 内边距 */
+    padding: 15px 20px;
+    /* 文本居中 */
+    text-align: center;
+    /* 字体大小 */
+    font-size: 0.75rem;
+    /* 颜色 */
+    color: #999999;
+}
+
+
+/* ===========================================
+   5. 表单样式
+   =========================================== */
+
+/* 
+ * 表单组
+ * 包含标签和输入控件
+ */
+.form-group {
+    /* 下边距 */
+    margin-bottom: 20px;
+}
+
+/* 表单行 - 用于并排显示两个表单元素 */
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+/* 表单标签 */
+.form-group label {
+    /* 显示为块级元素 */
+    display: block;
+    /* 字体大小 */
+    font-size: 0.875rem;
+    /* 字体粗细 */
+    font-weight: 500;
+    /* 颜色 */
+    color: #333333;
+    /* 下边距 */
+    margin-bottom: 8px;
+}
+
+/* 必填标记 */
+.required {
+    /* 颜色 */
+    color: #f44336;
+    /* 左边距 */
+    margin-left: 3px;
+}
+
+/* 输入控件通用样式 */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+select {
+    /* 宽度100% */
+    width: 100%;
+    /* 高度 */
+    height: 44px;
+    /* 内边距 */
+    padding: 10px 15px;
+    /* 字体大小 */
+    font-size: 0.9375rem;
+    /* 边框 */
+    border: 1px solid #dddddd;
+    /* 圆角 */
+    border-radius: 6px;
+    /* 背景颜色 */
+    background: #ffffff;
+    /* 颜色 */
+    color: #333333;
+    /* 过渡效果 */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 输入框焦点状态 */
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+select:focus {
+    /* 边框颜色 */
+    border-color: #2196F3;
+    /* 阴影 */
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+    /* 移除默认 outline */
+    outline: none;
+}
+
+/* 输入框禁用状态 */
+input:disabled,
+select:disabled {
+    /* 背景颜色 */
+    background: #f5f5f5;
+    /* 颜色 */
+    color: #999999;
+    /* 边框颜色 */
+    border-color: #eeeeee;
+    /* 指针样式 */
+    cursor: not-allowed;
+}
+
+/* 输入框占位符样式 */
+input::placeholder {
+    color: #bbbbbb;
+}
+
+/* 表单提示文字 */
+.form-hint {
+    /* 显示为块级元素 */
+    display: block;
+    /* 字体大小 */
+    font-size: 0.75rem;
+    /* 颜色 */
+    color: #999999;
+    /* 上边距 */
+    margin-top: 5px;
+}
+
+/* 
+ * 多选框组
+ * 水平排列的复选框
+ */
+.checkbox-group {
+    /* 弹性布局 */
+    display: flex;
+    /* 允许换行 */
+    flex-wrap: wrap;
+    /* 间距 */
+    gap: 8px;
+}
+
+/* 多选框标签 - 按钮式复选框 */
+.checkbox-label {
+    /* 弹性布局 */
+    display: inline-flex;
+    /* 垂直居中 */
+    align-items: center;
+    /* 水平居中 */
+    justify-content: center;
+    /* 鼠标指针 */
+    cursor: pointer;
+    /* 字体大小 */
+    font-size: 0.875rem;
+    /* 位置 */
+    position: relative;
+    /* 用户选择 */
+    user-select: none;
+    /* 内边距 */
+    padding: 8px 16px;
+    /* 边框 */
+    border: 1px solid #d9d9d9;
+    /* 背景 */
+    background-color: #ffffff;
+    /* 文字颜色 */
+    color: #333333;
+    /* 过渡效果 */
+    transition: all 0.2s ease;
+    /* 去掉默认样式 */
+    margin: 0;
+}
+
+/* 隐藏原生复选框 */
+.checkbox-label input[type="checkbox"] {
+    /* 隐藏 */
+    opacity: 0;
+    /* 位置 */
+    position: absolute;
+    /* 尺寸 */
+    width: 100%;
+    height: 100%;
+    /* 重置位置 */
+    left: 0;
+    top: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* 去掉默认的checkmark元素 */
+.checkmark {
+    display: none;
+}
+
+/* 复选框悬停状态 */
+.checkbox-label:hover {
+    /* 边框颜色变化 */
+    border-color: #2196F3;
+    /* 背景颜色 */
+    background-color: #e6f7ff;
+}
+
+/* 复选框选中状态 */
+.checkbox-label input[type="checkbox"]:checked + .checkmark {
+    display: none;
+}
+
+/* 复选框选中状态 - 标签样式 */
+.checkbox-label input[type="checkbox"]:checked {
+    z-index: -1;
+}
+
+.checkbox-label input[type="checkbox"]:checked + * {
+    color: #ffffff;
+}
+
+.checkbox-label input[type="checkbox"]:checked ~ span:last-child {
+    color: #ffffff;
+}
+
+.checkbox-label:has(input[type="checkbox"]:checked) {
+    /* 背景颜色 */
+    background-color: #2196F3;
+    /* 边框颜色 */
+    border-color: #2196F3;
+    /* 文字颜色 */
+    color: #ffffff;
+    /* 阴影效果 */
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+}
+
+/* 复选框禁用状态 */
+.checkbox-label input[type="checkbox"]:disabled + * {
+    color: rgba(0, 0, 0, 0.25);
+}
+
+.checkbox-label input[type="checkbox"]:disabled ~ span:last-child {
+    color: rgba(0, 0, 0, 0.25);
+}
+
+.checkbox-label:has(input[type="checkbox"]:disabled) {
+    /* 背景颜色 */
+    background-color: #f5f5f5;
+    /* 边框颜色 */
+    border-color: #d9d9d9;
+    /* 文字颜色 */
+    color: rgba(0, 0, 0, 0.25);
+    /* 指针样式 */
+    cursor: not-allowed;
+}
+
+
+/* ===========================================
+   6. 按钮样式
+   =========================================== */
+
+/* 
+ * 基础按钮样式
+ */
+.btn {
+    /* 显示为行内块元素 */
+    display: inline-flex;
+    /* 水平居中 */
+    justify-content: center;
+    /* 垂直居中 */
+    align-items: center;
+    /* 内边距 */
+    padding: 12px 24px;
+    /* 字体大小 */
+    font-size: 1rem;
+    /* 字体粗细 */
+    font-weight: 500;
+    /* 边框 */
+    border: none;
+    /* 圆角 */
+    border-radius: 6px;
+    /* 指针 */
+    cursor: pointer;
+    /* 过渡效果 */
+    transition: all 0.3s ease;
+    /* 用户选择 */
+    user-select: none;
+}
+
+/* 主按钮 - 蓝色 */
+.btn-primary {
+    /* 背景颜色 */
+    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+    /* 颜色 */
+    color: #ffffff;
+    /* 阴影 */
+    box-shadow: 0 2px 4px rgba(33, 150, 243, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+    /* 悬停时背景变化 */
+    background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+    /* 阴影变化 */
+    box-shadow: 0 4px 8px rgba(33, 150, 243, 0.4);
+    /* 上移效果 */
+    transform: translateY(-1px);
+}
+
+.btn-primary:active:not(:disabled) {
+    /* 点击时效果 */
+    transform: translateY(0);
+}
+
+.btn-primary:disabled {
+    /* 禁用状态 */
+    background: #cccccc;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* 块级按钮 */
+.btn-block {
+    /* 宽度100% */
+    width: 100%;
+}
+
+/* 下载按钮 */
+.download-btn {
+    /* 内联块显示 */
+    display: inline-block;
+    /* 内边距 */
+    padding: 10px 20px;
+    /* 背景颜色 */
+    background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+    /* 颜色 */
+    color: #ffffff;
+    /* 圆角 */
+    border-radius: 6px;
+    /* 字体粗细 */
+    font-weight: 500;
+    /* 过渡效果 */
+    transition: all 0.3s ease;
+    /* 文本装饰 */
+    text-decoration: none;
+}
+
+.download-btn:hover {
+    /* 悬停效果 */
+    background: linear-gradient(135deg, #388E3C 0%, #2E7D32 100%);
+    /* 阴影 */
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.4);
+    /* 颜色 */
+    color: #ffffff;
+    /* 上移 */
+    transform: translateY(-1px);
+}
+
+
+/* ===========================================
+   7. 状态区域样式
+   =========================================== */
+
+/* 
+ * 状态区域容器
+ */
+.status-area {
+    /* 背景颜色 */
+    background: #ffffff;
+    /* 圆角 */
+    border-radius: 8px;
+    /* 阴影 */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    /* 内边距 */
+    padding: 30px 20px;
+    /* 下边距 */
+    margin-bottom: 20px;
+    /* 文本居中 */
+    text-align: center;
+}
+
+/* 
+ * 状态盒子
+ */
+.status-box {
+    /* 动画 */
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 
+ * Loading状态样式
+ */
+.status-box.loading {
+    /* 弹性布局 */
+    display: flex;
+    /* 垂直居中 */
+    flex-direction: column;
+    /* 水平居中 */
+    align-items: center;
+    /* 间距 */
+    gap: 15px;
+}
+
+.status-box.loading p {
+    /* 字体大小 */
+    font-size: 0.9375rem;
+    /* 颜色 */
+    color: #666666;
+}
+
+/* 
+ * Loading旋转动画
+ */
+.spinner {
+    /* 尺寸 */
+    width: 40px;
+    height: 40px;
+    /* 边框 */
+    border: 3px solid #f0f0f0;
+    /* 上边框颜色 */
+    border-top-color: #2196F3;
+    /* 圆角 */
+    border-radius: 50%;
+    /* 动画 */
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 
+ * 成功状态样式
+ */
+.status-box.success {
+    /* 成功图标颜色 */
+    color: #4CAF50;
+}
+
+.status-icon {
+    /* 字体大小 */
+    font-size: 3rem;
+    /* 下边距 */
+    margin-bottom: 15px;
+}
+
+.status-box.success h3 {
+    /* 字体大小 */
+    font-size: 1.25rem;
+    /* 字体粗细 */
+    font-weight: 600;
+    /* 下边距 */
+    margin-bottom: 10px;
+    /* 颜色 */
+    color: #333333;
+}
+
+.status-box.success p {
+    /* 字体大小 */
+    font-size: 0.9375rem;
+    /* 颜色 */
+    color: #666666;
+    /* 下边距 */
+    margin-bottom: 20px;
+}
+
+/* 
+ * 下载链接容器
+ */
+.download-links {
+    /* 弹性布局 */
+    display: flex;
+    /* 允许换行 */
+    flex-wrap: wrap;
+    /* 水平居中 */
+    justify-content: center;
+    /* 间距 */
+    gap: 10px;
+}
+
+/* 
+ * 错误状态样式
+ */
+.status-box.error {
+    /* 错误图标颜色 */
+    color: #f44336;
+}
+
+.status-box.error h3 {
+    /* 字体大小 */
+    font-size: 1.25rem;
+    /* 字体粗细 */
+    font-weight: 600;
+    /* 下边距 */
+    margin-bottom: 10px;
+    /* 颜色 */
+    color: #333333;
+}
+
+.status-box.error p {
+    /* 字体大小 */
+    font-size: 0.9375rem;
+    /* 颜色 */
+    color: #666666;
+}
+
+
+/* ===========================================
+   8. 错误消息样式
+   =========================================== */
+
+/* 
+ * 错误消息容器
+ */
+.error-message {
+    /* 背景颜色 */
+    background: #ffebee;
+    /* 边框 */
+    border: 1px solid #ffcdd2;
+    /* 颜色 */
+    color: #c62828;
+    /* 圆角 */
+    border-radius: 6px;
+    /* 内边距 */
+    padding: 10px 15px;
+    /* 字体大小 */
+    font-size: 0.875rem;
+    /* 下边距 */
+    margin-bottom: 15px;
+    /* 文本居中 */
+    text-align: center;
+}
+
+/* 成功消息样式 */
+.error-message.success {
+    /* 背景颜色 */
+    background: #e8f5e9;
+    /* 边框 */
+    border-color: #c8e6c9;
+    /* 颜色 */
+    color: #2e7d32;
+}
+
+
+/* ===========================================
+   9. 页面底部
+   =========================================== */
+
+/* 
+ * 页面底部样式
+ */
+.page-footer {
+    /* 文本居中 */
+    text-align: center;
+    /* 上边距 */
+    margin-top: auto;
+    /* 字体大小 */
+    font-size: 0.75rem;
+    /* 颜色 */
+    color: #999999;
+    /* 内边距 */
+    padding: 20px 0;
+}
+
+
+/* ===========================================
+   10. 响应式设计
+   =========================================== */
+
+/* 
+ * 平板设备
+ * 屏幕宽度小于768px
+ */
+@media (max-width: 768px) {
+    .container {
+        /* 减小内边距 */
+        padding: 15px;
+    }
+    
+    .page-header h1 {
+        /* 减小标题字体 */
+        font-size: 1.5rem;
+        /* 右边距，为退出链接留空间 */
+        margin-right: 60px;
+    }
+    
+    .logout-link {
+        /* 绝对定位 */
+        position: static;
+        /* 块级显示 */
+        display: inline-block;
+        /* 右边距 */
+        margin-top: 10px;
+    }
+    
+    .card-body {
+        /* 减小内边距 */
+        padding: 20px 15px;
+    }
+    
+    .form-row {
+        /* 改为垂直排列 */
+        flex-direction: column;
+        /* 间距 */
+        gap: 0;
+    }
+    
+    .checkbox-group {
+        /* 垂直排列 */
+        flex-direction: column;
+        /* 间距 */
+        gap: 10px;
+    }
+    
+    .page-header {
+        /* 改为相对定位 */
+        position: relative;
+    }
+}
+
+/* 
+ * 手机设备
+ * 屏幕宽度小于480px
+ */
+@media (max-width: 480px) {
+    html {
+        /* 减小根字体大小 */
+        font-size: 14px;
+    }
+    
+    .page-header h1 {
+        /* 进一步减小标题字体 */
+        font-size: 1.25rem;
+    }
+    
+    .card-header {
+        /* 减小内边距 */
+        padding: 20px 15px;
+    }
+    
+    .card-header h1 {
+        /* 减小字体 */
+        font-size: 1.25rem;
+    }
+    
+    .form-group {
+        /* 减小下边距 */
+        margin-bottom: 15px;
+    }
+    
+    .btn {
+        /* 减小内边距 */
+        padding: 10px 20px;
+    }
+    
+    .status-area {
+        /* 减小内边距 */
+        padding: 20px 15px;
+    }
+    
+    .download-links {
+        /* 垂直排列 */
+        flex-direction: column;
+    }
+    
+    .download-btn {
+        /* 块级显示 */
+        display: block;
+        /* 文本居中 */
+        text-align: center;
+    }
+}
+
+
+/* ===========================================
+   11. 查询卡片特殊样式
+   =========================================== */
+
+/* 
+ * 查询卡片样式
+ * 适配查询表单
+ */
+.query-card .card-body {
+    /* 背景 */
+    background: #ffffff;
+}
+
+
+/* ===========================================
+   12. 主内容区域
+   =========================================== */
+
+/* 
+ * 主内容区域
+ */
+.main-content {
+    /* 弹性布局，垂直排列 */
+    flex: 1;
+}
