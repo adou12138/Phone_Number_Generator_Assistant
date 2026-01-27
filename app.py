@@ -753,8 +753,11 @@ def api_generate():
         
         # 提取参数
         prefix = str(data.get('prefix', '')).strip()
-        suffix_4 = str(data.get('suffix_4', '')).strip()
-        suffix_3 = str(data.get('suffix_3', '')).strip()
+        # 修复：先检查是否为 None，再转换为字符串
+        suffix_4_raw = data.get('suffix_4')
+        suffix_3_raw = data.get('suffix_3')
+        suffix_4 = str(suffix_4_raw).strip() if suffix_4_raw and str(suffix_4_raw).strip() else ''
+        suffix_3 = str(suffix_3_raw).strip() if suffix_3_raw and str(suffix_3_raw).strip() else ''
         province = str(data.get('province', '')).strip()
         city = str(data.get('city', '')).strip()
         operators = data.get('operators', [])
