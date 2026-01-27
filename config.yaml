@@ -48,10 +48,10 @@ login:
   # 支持配置多个用户，每个用户包含用户名和密码
   # 密码为明文存储，如需更高安全性可考虑加密存储
   users:
-    - username: "admin"
-      password: "admin123"
-    - username: "operator"
-      password: "op2024"
+    - username: "chenwei"
+      password: "qwer1234"
+    - username: "qsl"
+      password: "qwer1234"
     # 添加更多用户时，复制以下格式：
     # - username: "新用户名"
     #   password: "新密码"
