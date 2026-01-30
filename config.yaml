@@ -29,6 +29,8 @@ app:
   # 生产环境必须设为 false
   # 调试模式下会显示详细错误信息
   debug: false
+
+  vercel_tmp: true  # true: Vercel使用/tmp目录, false: 使用项目目录
   
   # Flask密钥
   # 用于会话加密，生产环境请修改为复杂的随机字符串
