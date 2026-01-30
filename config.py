@@ -343,14 +343,19 @@ class Config:
     def get_download_dir(self) -> str:
         """
         获取下载目录路径
-        
+
         返回：
-            str: 下载目录的绝对路径，根据操作系统自动转换路径格式
+            str: 下载目录的绝对路径，根据配置文件 vercel_tmp 设置决定
         """
         base_dir = self.base_dir
+
+        # 根据配置决定是否使用 /tmp 目录
+        if self.is_vercel_tmp_enabled():
+            base_dir = Path('/tmp')
+
         download_dir = self.download.get('dir', 'downloads')
         download_path = base_dir / download_dir
-        
+
         # 确保下载目录存在
         if not download_path.exists():
             download_path.mkdir(parents=True, exist_ok=True)
@@ -361,18 +366,32 @@ class Config:
         获取日志文件路径
         
         返回：
-            str: 日志文件的绝对路径，根据操作系统自动转换路径格式
+            str: 日志文件的绝对路径，根据配置文件 vercel_tmp 设置决定
         """
         base_dir = self.base_dir
+
+        # 根据配置决定是否使用 /tmp 目录
+        if self.is_vercel_tmp_enabled():
+            base_dir = Path('/tmp')
+
         log_file = self.logging.get('file', 'logs/app.log')
         log_path = base_dir / log_file
-        
+
         # 确保日志目录存在
         log_dir = log_path.parent
         if not log_dir.exists():
             log_dir.mkdir(parents=True, exist_ok=True)
         return str(log_path)
-
+        
+    def is_vercel_tmp_enabled(self) -> bool:
+        """
+        检查是否启用 /tmp 目录
+        
+        读取配置文件中的 vercel_tmp 设置
+        返回：
+            bool: 启用返回 True，否则返回 False
+        """
+        return self.logging.get('vercel_tmp', False)
 
 # 全局配置实例
 # 在应用中使用此单例访问配置
