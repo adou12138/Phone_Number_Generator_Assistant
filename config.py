@@ -343,9 +343,7 @@ class Config:
     def get_download_dir(self) -> str:
         """
         获取下载目录路径
-
-        返回：
-            str: 下载目录的绝对路径，根据配置文件 vercel_tmp 设置决定
+        返回：str: 下载目录的绝对路径，根据配置文件 vercel_tmp 设置决定
         """
         base_dir = self.base_dir
 
@@ -356,9 +354,11 @@ class Config:
         download_dir = self.download.get('dir', 'downloads')
         download_path = base_dir / download_dir
 
-        # 确保下载目录存在
+        # 确保下载目录存在（非 /tmp 目录）
         if not download_path.exists():
             download_path.mkdir(parents=True, exist_ok=True)
+            return str(download_path)
+         #  /tmp 目录直接返回
         return str(download_path)
     
     def get_log_file(self) -> str:
