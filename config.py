@@ -343,37 +343,48 @@ class Config:
     def get_download_dir(self) -> str:
         """
         获取下载目录路径
-        返回：str: 下载目录的绝对路径，根据配置文件 vercel_tmp 设置决定
+
+        返回：
+            str: 下载目录的绝对路径，根据配置和平台决定
+            use_tmp_dir(): true → /tmp/downloads
+            use_tmp_dir(): false → 项目目录/downloads
         """
+        # 使用 /tmp 目录的条件：Linux 平台 + vercel_tmp: true
+        if self.use_tmp_dir():
+            download_path = Path('/tmp/downloads')
+            # /tmp 目录通常已存在且可写，直接返回
+            return str(download_path)
+
+        # 非 /tmp 情况：使用项目目录
         base_dir = self.base_dir
-
-        # 根据配置决定是否使用 /tmp 目录
-        if self.is_vercel_tmp_enabled():
-            base_dir = Path('/tmp')
-
         download_dir = self.download.get('dir', 'downloads')
         download_path = base_dir / download_dir
 
-        # 确保下载目录存在（非 /tmp 目录）
+        # 确保下载目录存在
         if not download_path.exists():
             download_path.mkdir(parents=True, exist_ok=True)
-            return str(download_path)
-         #  /tmp 目录直接返回
         return str(download_path)
     
     def get_log_file(self) -> str:
         """
         获取日志文件路径
-        
+
         返回：
-            str: 日志文件的绝对路径，根据配置文件 vercel_tmp 设置决定
+            str: 日志文件的绝对路径，根据配置和平台决定
+            use_tmp_dir(): true → /tmp/logs/app.log
+            use_tmp_dir(): false → 项目目录/logs/app.log
         """
+        # 使用 /tmp 目录的条件：Linux 平台 + vercel_tmp: true
+        if self.use_tmp_dir():
+            log_path = Path('/tmp/logs/app.log')
+            # 确保 /tmp/logs 目录存在
+            log_dir = log_path.parent
+            if not log_dir.exists():
+                log_dir.mkdir(parents=True, exist_ok=True)
+            return str(log_path)
+
+        # 非 /tmp 情况：使用项目目录
         base_dir = self.base_dir
-
-        # 根据配置决定是否使用 /tmp 目录
-        if self.is_vercel_tmp_enabled():
-            base_dir = Path('/tmp')
-
         log_file = self.logging.get('file', 'logs/app.log')
         log_path = base_dir / log_file
 
@@ -386,12 +397,35 @@ class Config:
     def is_vercel_tmp_enabled(self) -> bool:
         """
         检查是否启用 /tmp 目录
-        
+
         读取配置文件中的 vercel_tmp 设置
         返回：
             bool: 启用返回 True，否则返回 False
         """
         return self.logging.get('vercel_tmp', False)
+
+    def is_linux(self) -> bool:
+        """
+        检查是否运行在 Linux 平台上
+
+        返回：
+            bool: Linux 平台返回 True，否则返回 False
+        """
+        import platform
+        return platform.system().lower() == 'linux'
+
+    def use_tmp_dir(self) -> bool:
+        """
+        检查是否应该使用 /tmp 目录
+
+        条件：
+            1. 配置文件 vercel_tmp: true
+            2. 运行在 Linux 平台上
+
+        返回：
+            bool: 满足条件返回 True，否则返回 False
+        """
+        return self.is_linux() and self.is_vercel_tmp_enabled()
 
 # 全局配置实例
 # 在应用中使用此单例访问配置
