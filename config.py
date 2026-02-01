@@ -417,15 +417,16 @@ class Config:
     def use_tmp_dir(self) -> bool:
         """
         检查是否应该使用 /tmp 目录
-
-        条件：
-            1. 配置文件 vercel_tmp: true
-            2. 运行在 Linux 平台上
+        vercel_tmp: true → 直接使用 /tmp 目录（不检测操作系统）
+        vercel_tmp: false → 根据实际操作系统选择
 
         返回：
-            bool: 满足条件返回 True，否则返回 False
+            bool: 应该使用 /tmp 返回 True，否则返回 False
         """
-        return self.is_linux() and self.is_vercel_tmp_enabled()
+        if self.is_vercel_tmp_enabled():
+            return True
+        # vercel_tmp: false 时，根据操作系统判断
+        return self.is_linux()
 
 # 全局配置实例
 # 在应用中使用此单例访问配置
