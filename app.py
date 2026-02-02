@@ -31,7 +31,7 @@ from pathlib import Path
 from functools import wraps
 from multiprocessing import Pool, cpu_count
 from typing import List, Dict, Any, Optional, Tuple
-
+from urllib.parse import unquote
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, send_file, Response
 
 # 导入配置模块
@@ -211,12 +211,14 @@ class DatabaseManager:
         参数： province: 省份名称
         返回：List[str]: 城市名称列表
         """
-        print(f"数据库路径: {self.db_path}")
-        print(f"查询省份: {province}")
+        # URL 解码省份参数
+        province_decoded = unquote(province)
+        print(f"[DEBUG] 原始省份参数: '{province}'")
+        print(f"[DEBUG] 解码后省份: '{province_decoded}'")
         logging.debug(f"数据库路径: {self.db_path}")
-        logging.debug(f"查询省份: {province}")
+        logging.debug(f"查询省份: {province_decoded}")
         query = "SELECT DISTINCT city FROM phone_location WHERE province = ? ORDER BY city"
-        results = self.execute_query(query, (province,))
+        results = self.execute_query(query, (province_decoded,))
         return [row['city'] for row in results]
 
 
