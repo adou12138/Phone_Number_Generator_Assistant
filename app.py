@@ -386,6 +386,8 @@ class FileManager:
         """
         self.download_dir = config.get_download_dir()
         self.expire_hours = config.download.get('expire_hours', 24)
+        print(f"[DEBUG] 下载目录: {self.download_dir}")
+        print(f"[DEBUG] 过期时间: {self.expire_hours} 小时")
     
     def cleanup_expired_files(self) -> int:
         """
@@ -428,6 +430,8 @@ class FileManager:
             List[Dict]: 拆分后的文件信息列表
         """
         filepath = os.path.join(self.download_dir, filename)
+        print(f"[DEBUG] 原始文件名: {filename}")
+        print(f"[DEBUG] 完整文件路径: {filepath}")
         if not os.path.exists(filepath):
             return []
         
