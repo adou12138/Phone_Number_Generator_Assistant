@@ -841,7 +841,9 @@ def download_file(filename: str):
         文件下载响应
     """
     filepath = os.path.join(config.get_download_dir(), filename)
-    
+    print(f"[DEBUG] 原始文件名: {filename}")
+    print(f"[DEBUG] 完整文件路径: {filepath}")
+    print(f"[DEBUG] 文件是否存在: {os.path.exists(filepath)}")
     if not os.path.exists(filepath):
         return jsonify({
             'code': 404,
