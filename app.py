@@ -197,24 +197,22 @@ class DatabaseManager:
     def get_provinces(self) -> List[str]:
         """
         获取所有省份列表
-        
-        返回：
-            List[str]: 省份名称列表
+        返回： List[str]: 省份名称列表
         """
+        print(f"数据库路径: {self.db_path}")
         query = "SELECT DISTINCT province FROM phone_location ORDER BY province"
         results = self.execute_query(query)
+
         return [row['province'] for row in results]
     
     def get_cities(self, province: str) -> List[str]:
         """
         获取指定省份的城市列表
-        
-        参数：
-            province: 省份名称
-        
-        返回：
-            List[str]: 城市名称列表
+        参数： province: 省份名称
+        返回：List[str]: 城市名称列表
         """
+        print(f"数据库路径: {self.db_path}")
+        print(f"查询省份: {province}")
         query = "SELECT DISTINCT city FROM phone_location WHERE province = ? ORDER BY city"
         results = self.execute_query(query, (province,))
         return [row['city'] for row in results]
@@ -704,14 +702,9 @@ def api_provinces():
 def api_cities(province: str):
     """
     获取城市列表API
-    
-    返回指定省份的城市列表。
-    
-    参数：
-        province: 省份名称
-    
-    返回：
-        JSON: 城市列表
+    返回指定省份的城市列表
+    参数：province: 省份名称
+    返回：JSON: 城市列表
     """
     cities = db_manager.get_cities(province)
     return jsonify({
