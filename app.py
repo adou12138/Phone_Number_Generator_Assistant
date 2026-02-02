@@ -213,6 +213,8 @@ class DatabaseManager:
         """
         print(f"数据库路径: {self.db_path}")
         print(f"查询省份: {province}")
+        logging.info(f"数据库路径: {self.db_path}")
+        logging.info(f"查询省份: {province}")
         query = "SELECT DISTINCT city FROM phone_location WHERE province = ? ORDER BY city"
         results = self.execute_query(query, (province,))
         return [row['city'] for row in results]
