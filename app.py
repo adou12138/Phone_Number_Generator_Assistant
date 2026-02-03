@@ -686,7 +686,6 @@ def api_login():
 def api_logout():
     """
     退出登录API
-    
     处理用户退出登录请求。
     """
     session.clear()
@@ -698,9 +697,7 @@ def api_logout():
 def api_provinces():
     """
     获取省份列表API
-    
     返回所有可用的省份列表。
-    
     返回：
         JSON: 省份列表
     """
@@ -797,12 +794,15 @@ def api_generate():
         
         # 生成文件名
         filename = generate_filename(prefix, province, city, suffix)
+        print(f"[DEBUG] 生成的文件名: {filename}")
         
         # 写入文件
         actual_filename, file_size, file_size_str = number_generator.generate_to_file(numbers, filename)
-        
+        print(f"[DEBUG] 实际写入文件名: {actual_filename}")
         # 检查是否需要分批
         file_path = os.path.join(config.get_download_dir(), actual_filename)
+        print(f"[PATH] 生成文件完整路径: {file_path}")
+
         file_size_bytes = os.path.getsize(file_path)
         
         if file_size_bytes > number_generator.file_size_limit * 1024 * 1024:
@@ -837,30 +837,33 @@ def api_generate():
 def download_file(filename: str):
     """
     下载文件API
-    
+
     提供文件下载功能。
-    
-    参数：
-        filename: 文件名
-    
-    返回：
-        文件下载响应
+    参数：filename: 文件名（URL 编码）
+    返回：文件下载响应
     """
-    filepath = os.path.join(config.get_download_dir(), filename)
+    from urllib.parse import unquote
+
+    # URL 解码文件名
+    filename_decoded = unquote(filename)
     print(f"[DEBUG] 原始文件名: {filename}")
+    print(f"[DEBUG] 解码后文件名: {filename_decoded}")
+
+    filepath = os.path.join(config.get_download_dir(), filename_decoded)
     print(f"[DEBUG] 完整文件路径: {filepath}")
     print(f"[DEBUG] 文件是否存在: {os.path.exists(filepath)}")
+
     if not os.path.exists(filepath):
         return jsonify({
             'code': 404,
             'message': '文件不存在或已过期'
         }), 404
-    
+
     # 生成下载响应
     return send_file(
         filepath,
         as_attachment=True,
-        download_name=filename,
+        download_name=filename_decoded,
         mimetype='text/plain'
     )
 
