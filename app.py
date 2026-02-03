@@ -581,26 +581,32 @@ def validate_input(data: Dict[str, Any]) -> Tuple[bool, str]:
 def generate_filename(prefix: str, province: str, city: str, 
                       suffix: str, extension: str = 'txt') -> str:
     """
-        生成文件名
-        
-        命名格式：{前3位}_{省份}_{城市}_{后缀}_{时间戳}.{扩展名}
-        
-        参数：
-            prefix: 号段
-            province: 省份
-            city: 城市
-            suffix: 后缀（后3/4位）
-            extension: 文件扩展名
-        
-        返回：
-            str: 生成的文件名
-        """
+    生成文件名
+
+    命名格式：{前3位}_{省份}_{城市}_{后缀}_{时间戳}.{扩展名}
+
+    参数：
+        prefix: 号段
+        province: 省份（URL 编码）
+        city: 城市（URL 编码）
+        suffix: 后缀（后3/4位）
+        extension: 文件扩展名
+
+    返回：
+        str: 生成的文件名
+    """
+
+
+    # URL 解码省份和城市
+    province = unquote(province)
+    city = unquote(city)
+
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    
+
     # 清理特殊字符
     province = province.replace('/', '_').replace('\\', '_')
     city = city.replace('/', '_').replace('\\', '_')
-    
+
     filename = f"{prefix}_{province}_{city}_{suffix}_{timestamp}.{extension}"
     return filename
 
