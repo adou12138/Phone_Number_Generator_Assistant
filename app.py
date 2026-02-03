@@ -1,24 +1,19 @@
 # -*- coding: utf-8 -*-
 """
 手机号码生成查询系统 - Flask主应用
-
 本应用提供一个Web界面，允许用户根据筛选条件生成手机号码，
 并将结果导出为.txt文件下载。
-
 功能模块：
 - 用户认证：支持配置开关的登录功能
 - 号码生成：根据条件生成符合要求的手机号码
 - 文件导出：支持单个文件和分批下载
 - 数据库查询：高效的SQLite查询
-
 使用方法：
     python app.py              # 启动应用（默认端口5000）
     python app.py --port 8080  # 指定端口启动
-
-作者：Phone Number Generator
+作者：阿斗
 版本：1.0.0
 """
-
 import os
 import sys
 import sqlite3
@@ -37,7 +32,6 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 # 导入配置模块
 from config import config
 
-
 # ===========================================
 # Flask应用初始化
 # ===========================================
@@ -45,11 +39,8 @@ from config import config
 def create_app() -> Flask:
     """
     创建并配置Flask应用
-    
     这是应用工厂函数，负责创建Flask实例并加载所有配置。
-    
-    返回：
-        Flask: 配置完成的Flask应用实例
+    返回：Flask: 配置完成的Flask应用实例
     """
     # 创建Flask应用实例
     app = Flask(__name__)
@@ -114,9 +105,7 @@ app = create_app()
 class DatabaseManager:
     """
     数据库管理器
-    
     负责管理与SQLite数据库的连接和查询操作。
-    
     功能：
     - 数据库连接管理
     - 执行查询操作
@@ -132,9 +121,7 @@ class DatabaseManager:
     def get_connection(self) -> sqlite3.Connection:
         """
         获取数据库连接
-        
-        返回：
-            sqlite3.Connection: 数据库连接对象
+        返回：sqlite3.Connection: 数据库连接对象
         """
         print(f"数据库路径: {self.db_path}")
         conn = sqlite3.connect(self.db_path)
@@ -144,13 +131,11 @@ class DatabaseManager:
     def execute_query(self, query: str, params: Tuple = None) -> List[sqlite3.Row]:
         """
         执行查询语句
-        
         参数：
             query: SQL查询语句
             params: 查询参数（元组）
         
-        返回：
-            List[sqlite3.Row]: 查询结果列表
+        返回： List[sqlite3.Row]: 查询结果列表
         """
         conn = self.get_connection()
         try:
@@ -168,15 +153,12 @@ class DatabaseManager:
                               operators: List[int] = None) -> List[Dict[str, Any]]:
         """
         查询符合条件的电话号码归属地信息
-        
         参数：
             prefix: 手机号前3位号段
             province: 省份
             city: 城市
             operators: 运营商列表
-        
-        返回：
-            List[Dict]: 符合条件的归属地记录列表
+        返回：List[Dict]: 符合条件的归属地记录列表
         """
         # 构建查询条件
         conditions = ["prefix = ?", "province = ?", "city = ?"]
@@ -233,9 +215,7 @@ db_manager = DatabaseManager()
 class NumberGenerator:
     """
     号码生成器
-    
     负责根据条件生成手机号码，支持多进程并行生成。
-    
     生成逻辑：
     1. 从数据库查询符合条件的号段信息
     2. 组合完整的11位手机号码
@@ -256,7 +236,6 @@ class NumberGenerator:
                          city: str = None, operators: List[int] = None) -> List[str]:
         """
         生成符合条件的手机号码列表
-        
         参数：
             prefix: 手机号前3位号段
             suffix: 手机号最后4位（精确匹配）
@@ -264,9 +243,7 @@ class NumberGenerator:
             province: 省份
             city: 城市
             operators: 运营商列表
-        
-        返回：
-            List[str]: 生成的手机号码列表
+        返回：List[str]: 生成的手机号码列表
         """
         # 查询符合条件的号段信息
         locations = db_manager.query_phone_locations(prefix, province, city, operators)
@@ -293,15 +270,13 @@ class NumberGenerator:
                                         suffix_3: str = None) -> List[str]:
         """
         为单个归属地生成手机号码
-        
         参数：
             prefix: 号段（前3位）
             suffix: 区域码（4位）
             suffix_4: 后4位（精确匹配）
             suffix_3: 后3位（精确匹配）
         
-        返回：
-            List[str]: 生成的手机号码列表
+        返回：List[str]: 生成的手机号码列表
         """
         numbers = []
         
@@ -328,13 +303,10 @@ class NumberGenerator:
     def generate_to_file(self, numbers: List[str], filename: str) -> Tuple[str, int, str]:
         """
         将号码列表写入文件
-        
         参数：
             numbers: 手机号码列表
             filename: 文件名
-        
-        返回：
-            Tuple[str, int, str]: (文件名, 文件大小字节, 文件大小显示)
+        返回：Tuple[str, int, str]: (文件名, 文件大小字节, 文件大小显示)
         """
         filepath = os.path.join(config.get_download_dir(), filename)
         
@@ -351,12 +323,8 @@ class NumberGenerator:
     def _format_file_size(self, size: int) -> str:
         """
         格式化文件大小显示
-        
-        参数：
-            size: 文件大小（字节）
-        
-        返回：
-            str: 格式化后的大小字符串
+        参数：size: 文件大小（字节）
+        返回：str: 格式化后的大小字符串
         """
         for unit in ['B', 'KB', 'MB', 'GB']:
             if size < 1024:
@@ -376,10 +344,8 @@ number_generator = NumberGenerator()
 class FileManager:
     """
     文件管理器
-    
     负责管理生成的文件，包括分批处理和清理过期文件。
     """
-    
     def __init__(self):
         """
         初始化文件管理器
@@ -392,11 +358,8 @@ class FileManager:
     def cleanup_expired_files(self) -> int:
         """
         清理过期文件
-        
         删除超过过期时间的临时文件。
-        
-        返回：
-            int: 删除的文件数量
+        返回：int: 删除的文件数量
         """
         if not os.path.exists(self.download_dir):
             return 0
@@ -421,13 +384,10 @@ class FileManager:
     def split_file_for_download(self, filename: str, max_size_mb: int = 20) -> List[Dict[str, str]]:
         """
         拆分大文件为多个小文件
-        
         参数：
             filename: 原始文件名
             max_size_mb: 每个小文件的最大大小（MB）
-        
-        返回：
-            List[Dict]: 拆分后的文件信息列表
+        返回： List[Dict]: 拆分后的文件信息列表
         """
         filepath = os.path.join(self.download_dir, filename)
         print(f"[DEBUG] 原始文件名: {filename}")
@@ -503,7 +463,6 @@ file_manager = FileManager()
 def login_required(f):
     """
     登录验证装饰器
-    
     用于保护需要登录才能访问的路由。
     如果登录功能未启用，则跳过验证。
     """
@@ -524,12 +483,8 @@ def login_required(f):
 def validate_input(data: Dict[str, Any]) -> Tuple[bool, str]:
     """
     验证用户输入
-    
-    参数：
-        data: 用户提交的数据字典
-    
-    返回：
-        Tuple[bool, str]: (验证是否通过, 错误信息)
+    参数：data: 用户提交的数据字典
+    返回：Tuple[bool, str]: (验证是否通过, 错误信息)
     """
     # 验证必填字段
     prefix = str(data.get('prefix', '')).strip()
@@ -558,15 +513,12 @@ def validate_input(data: Dict[str, Any]) -> Tuple[bool, str]:
     
     if suffix_4 and suffix_3:
         return False, "后3位和后4位只能填写其一"
-    
     if suffix_4:
         if len(suffix_4) != 4 or not suffix_4.isdigit():
             return False, "后4位必须为4位数字"
-    
     if suffix_3:
         if len(suffix_3) != 3 or not suffix_3.isdigit():
             return False, "后3位必须为3位数字"
-    
     # 验证运营商
     operators = data.get('operators', [])
     if operators:
@@ -574,7 +526,6 @@ def validate_input(data: Dict[str, Any]) -> Tuple[bool, str]:
         for op in operators:
             if op not in valid_operators:
                 return False, f"无效的运营商类型：{op}"
-    
     return True, ""
 
 
@@ -582,21 +533,16 @@ def generate_filename(prefix: str, province: str, city: str,
                       suffix: str, extension: str = 'txt') -> str:
     """
     生成文件名
-
     命名格式：{前3位}_{省份}_{城市}_{后缀}_{时间戳}.{扩展名}
-
     参数：
         prefix: 号段
         province: 省份（URL 编码）
         city: 城市（URL 编码）
         suffix: 后缀（后3/4位）
         extension: 文件扩展名
-
     返回：
         str: 生成的文件名
     """
-
-
     # URL 解码省份和城市
     province = unquote(province)
     city = unquote(city)
@@ -620,7 +566,6 @@ def generate_filename(prefix: str, province: str, city: str,
 def index_page():
     """
     首页/查询页面
-    
     渲染查询表单页面。
     如果登录功能启用且用户未登录，则重定向到登录页。
     """
@@ -633,7 +578,6 @@ def index_page():
 def login_page():
     """
     登录页面
-    
     渲染登录表单页面。
     如果登录功能未启用，重定向到首页。
     """
@@ -652,13 +596,10 @@ def login_page():
 def api_login():
     """
     登录API
-    
     处理用户登录请求。
-    
     请求参数：
         username: 用户名
         password: 密码
-    
     返回：
         JSON: 登录结果
     """
@@ -729,9 +670,7 @@ def api_cities(province: str):
 def api_generate():
     """
     生成号码API
-    
     根据用户输入的条件生成手机号码，并返回下载链接。
-    
     请求参数：
         prefix: 手机号前3位号段（必填）
         suffix_4: 手机号最后4位（选填）
@@ -739,7 +678,6 @@ def api_generate():
         province: 省份（必填）
         city: 城市（必填）
         operators: 运营商列表（选填）
-    
     返回：
         JSON: 生成结果和下载链接
     """
@@ -801,7 +739,7 @@ def api_generate():
         print(f"[DEBUG] 实际写入文件名: {actual_filename}")
         # 检查是否需要分批
         file_path = os.path.join(config.get_download_dir(), actual_filename)
-        print(f"[PATH] 生成文件完整路径: {file_path}")
+        print(f"[DEBUG] 生成文件完整路径: {file_path}")
 
         file_size_bytes = os.path.getsize(file_path)
         
@@ -837,7 +775,6 @@ def api_generate():
 def download_file(filename: str):
     """
     下载文件API
-
     提供文件下载功能。
     参数：filename: 文件名（URL 编码）
     返回：文件下载响应
@@ -873,9 +810,7 @@ def download_file(filename: str):
 def api_cleanup():
     """
     清理过期文件API
-    
     手动触发清理过期文件。
-    
     返回：
         JSON: 清理结果
     """
@@ -937,7 +872,6 @@ def internal_error(error):
 def init_database():
     """
     初始化数据库
-    
     在应用启动时检查并初始化数据库。
     """
     try:
@@ -964,7 +898,6 @@ def init_database():
 def main():
     """
     主函数
-    
     启动Flask应用。
     """
     # 初始化数据库
